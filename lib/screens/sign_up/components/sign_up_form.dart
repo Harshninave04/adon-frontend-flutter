@@ -18,7 +18,10 @@ class _SignUpFormState extends State<SignUpForm> {
   String? email;
   String? mobile;
   String? password;
-  String? confirmPassword;
+
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
@@ -90,8 +93,13 @@ class _SignUpFormState extends State<SignUpForm> {
               hint: "Full Name",
               icon: Icons.person_outline,
             ),
-            validator: (v) => v == null || v.isEmpty ? "" : null,
-            onSaved: (v) => name = v,
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) {
+                return "Name is required";
+              }
+              return null;
+            },
+            onSaved: (v) => name = v!.trim(),
           ),
 
           const SizedBox(height: 20),
@@ -103,8 +111,13 @@ class _SignUpFormState extends State<SignUpForm> {
               hint: "Email",
               icon: Icons.email_outlined,
             ),
-            validator: (v) => v == null || v.isEmpty ? "" : null,
-            onSaved: (v) => email = v,
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) {
+                return "Email is required";
+              }
+              return null;
+            },
+            onSaved: (v) => email = v!.trim(),
           ),
 
           const SizedBox(height: 20),
@@ -116,14 +129,20 @@ class _SignUpFormState extends State<SignUpForm> {
               hint: "Mobile Number",
               icon: Icons.phone_outlined,
             ),
-            validator: (v) => v == null || v.length != 10 ? "" : null,
-            onSaved: (v) => mobile = v,
+            validator: (v) {
+              if (v == null || v.trim().length != 10) {
+                return "Enter valid 10 digit mobile number";
+              }
+              return null;
+            },
+            onSaved: (v) => mobile = v!.trim(),
           ),
 
           const SizedBox(height: 20),
 
           /// PASSWORD
           TextFormField(
+            controller: _passwordController,
             obscureText: obscurePassword,
             decoration: _inputDecoration(
               hint: "Password",
@@ -141,14 +160,23 @@ class _SignUpFormState extends State<SignUpForm> {
                 },
               ),
             ),
-            validator: (v) => v == null || v.length < 8 ? "" : null,
+            validator: (v) {
+              if (v == null || v.isEmpty) {
+                return "Password is required";
+              }
+              if (v.length < 8) {
+                return "Password must be at least 8 characters";
+              }
+              return null;
+            },
             onSaved: (v) => password = v,
           ),
 
           const SizedBox(height: 20),
 
-          /// CONFIRM PASSWORD
+          /// CONFIRM PASSWORD (UI ONLY)
           TextFormField(
+            controller: _confirmPasswordController,
             obscureText: obscureConfirmPassword,
             decoration: _inputDecoration(
               hint: "Confirm Password",
@@ -166,8 +194,15 @@ class _SignUpFormState extends State<SignUpForm> {
                 },
               ),
             ),
-            validator: (v) => v == null || v != password ? "" : null,
-            onSaved: (v) => confirmPassword = v,
+            validator: (v) {
+              if (v == null || v.isEmpty) {
+                return "Confirm password required";
+              }
+              if (v != _passwordController.text) {
+                return "Passwords do not match";
+              }
+              return null;
+            },
           ),
 
           const SizedBox(height: 30),
