@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'AdOn',
       theme: AppTheme.lightTheme(context),
 
-      // Always start from Splash
+      // Start from Splash which will check auth status
       initialRoute: SplashScreen.routeName,
 
       // Named routes

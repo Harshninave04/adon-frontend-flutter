@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../constants.dart';
+import '../../features/auth/auth_service.dart';
+import '../init_screen.dart';
 import '../sign_in/sign_in_screen.dart';
 import 'components/splash_content.dart';
 
@@ -15,9 +17,12 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   int currentPage = 0;
+  bool isCheckingAuth = true;
+  bool isLoggedIn = false;
+  
   List<Map<String, String>> splashData = [
     {
-      "text": "Welcome to AdOn, Let’s shop!",
+      "text": "Welcome to AdOn, Let's shop!",
       "image": "assets/images/splash_1.png"
     },
     {
@@ -30,8 +35,54 @@ class _SplashScreenState extends State<SplashScreen> {
       "image": "assets/images/splash_3.png"
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuthStatus();
+  }
+
+  Future<void> _checkAuthStatus() async {
+    print('🚀 App started - checking auth status');
+    
+    // Check if user has a valid token
+    final loggedIn = await AuthService.isLoggedIn();
+    print('🔍 Token exists in storage: $loggedIn');
+    
+    if (loggedIn) {
+      // Try to verify/refresh the token
+      print('🔄 Validating token with backend...');
+      final tokenValid = await AuthService.loginWithToken();
+      print('✔️ Token validation result: $tokenValid');
+      
+      if (tokenValid) {
+        // Token is valid, navigate to home
+        print('✅ Navigating to InitScreen (home)');
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, InitScreen.routeName);
+        }
+        return;
+      }
+    }
+    
+    // No valid token, show splash screens
+    print('❌ No valid token - showing splash screens');
+    setState(() {
+      isCheckingAuth = false;
+      isLoggedIn = false;
+    });
+  }
   @override
   Widget build(BuildContext context) {
+    // Show loading indicator while checking auth
+    if (isCheckingAuth) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         child: SizedBox(
