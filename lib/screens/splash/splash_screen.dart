@@ -19,7 +19,9 @@ class _SplashScreenState extends State<SplashScreen> {
   int currentPage = 0;
   bool isCheckingAuth = true;
   bool isLoggedIn = false;
-  
+
+  final PageController _pageController = PageController();
+
   List<Map<String, String>> splashData = [
     {
       "text": "Welcome to AdOn, Let's shop!",
@@ -44,19 +46,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkAuthStatus() async {
     print('🚀 App started - checking auth status');
-    
-    // Check if user has a valid token
+
     final loggedIn = await AuthService.isLoggedIn();
     print('🔍 Token exists in storage: $loggedIn');
-    
+
     if (loggedIn) {
-      // Try to verify/refresh the token
       print('🔄 Validating token with backend...');
       final tokenValid = await AuthService.loginWithToken();
       print('✔️ Token validation result: $tokenValid');
-      
+
       if (tokenValid) {
-        // Token is valid, navigate to home
         print('✅ Navigating to InitScreen (home)');
         if (mounted) {
           Navigator.pushReplacementNamed(context, InitScreen.routeName);
@@ -64,22 +63,19 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
     }
-    
-    // No valid token, show splash screens
+
     print('❌ No valid token - showing splash screens');
     setState(() {
       isCheckingAuth = false;
       isLoggedIn = false;
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    // Show loading indicator while checking auth
     if (isCheckingAuth) {
       return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -89,9 +85,13 @@ class _SplashScreenState extends State<SplashScreen> {
           width: double.infinity,
           child: Column(
             children: <Widget>[
+              /// Splash Pages
               Expanded(
                 flex: 3,
                 child: PageView.builder(
+                  controller: _pageController,
+                  physics:
+                      const NeverScrollableScrollPhysics(), // 🚫 disable swipe
                   onPageChanged: (value) {
                     setState(() {
                       currentPage = value;
@@ -104,6 +104,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                 ),
               ),
+
+              /// Bottom Section
               Expanded(
                 flex: 2,
                 child: Padding(
@@ -111,6 +113,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   child: Column(
                     children: <Widget>[
                       const Spacer(),
+
+                      /// Dots
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(
@@ -129,13 +133,29 @@ class _SplashScreenState extends State<SplashScreen> {
                           ),
                         ),
                       ),
+
                       const Spacer(flex: 3),
+
+                      /// Next / Continue Button
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, SignInScreen.routeName);
+                          if (currentPage < splashData.length - 1) {
+                            _pageController.nextPage(
+                              duration: kAnimationDuration,
+                              curve: Curves.ease,
+                            );
+                          } else {
+                            Navigator.pushReplacementNamed(
+                                context, SignInScreen.routeName);
+                          }
                         },
-                        child: const Text("Continue"),
+                        child: Text(
+                          currentPage == splashData.length - 1
+                              ? "Continue"
+                              : "Next",
+                        ),
                       ),
+
                       const Spacer(),
                     ],
                   ),
