@@ -36,9 +36,21 @@ class _InitScreenState extends State<InitScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: pages[currentSelectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
+    return WillPopScope(
+      onWillPop: () async {
+        // If on home tab, exit app. Otherwise, go back to home tab
+        if (currentSelectedIndex != 0) {
+          setState(() {
+            currentSelectedIndex = 0;
+          });
+          return false;
+        }
+        // Exit the app
+        return true;
+      },
+      child: Scaffold(
+        body: pages[currentSelectedIndex],
+        bottomNavigationBar: BottomNavigationBar(
         onTap: updateCurrentIndex,
         currentIndex: currentSelectedIndex,
         showSelectedLabels: false,
@@ -114,6 +126,7 @@ class _InitScreenState extends State<InitScreen> {
             label: "Fav",
           ),
         ],
+      ),
       ),
     );
   }
