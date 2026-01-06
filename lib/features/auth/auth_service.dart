@@ -100,19 +100,26 @@ class AuthService {
         },
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
         final user = data['user'] ?? data['developer'];
 
-        await prefs.setString('userId', user['id']);
-        await prefs.setString('userEmail', user['email']);
-        await prefs.setString('userName', user['name']);
-
-        return true;
+        if (user != null) {
+          await prefs.setString('userId', user['id']);
+          await prefs.setString('userEmail', user['email']);
+          await prefs.setString('userName', user['name']);
+          return true;
+        } else {
+          print('❌ No user/developer data in auto-login response');
+        }
+      } else {
+        print('❌ Auto-login failed with status: ${response.statusCode}');
       }
 
+      // Token is invalid, clear it
+      await prefs.remove('accessToken');
       return false;
-    } catch (_) {
+    } catch (e) {
       return false;
     }
   }
@@ -172,47 +179,45 @@ class AuthService {
     };
   }
 
+  /// ============================
+  /// FORGOT PASSWORD (SEND OTP)
+  /// ============================
+  static Future<bool> forgotPassword(String email) async {
+    try {
+      final response = await ApiClient.post(
+        ApiConstants.forgotPassword,
+        {
+          "email": email.trim(),
+        },
+      );
 
-/// ============================
-/// FORGOT PASSWORD (SEND OTP)
-/// ============================
-static Future<bool> forgotPassword(String email) async {
-  try {
-    final response = await ApiClient.post(
-      ApiConstants.forgotPassword,
-      {
-        "email": email.trim(),
-      },
-    );
-
-    return response.statusCode == 200 || response.statusCode == 201;
-  } catch (_) {
-    return false;
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (_) {
+      return false;
+    }
   }
-}
 
-/// ============================
-/// RESET PASSWORD (OTP + NEW PASSWORD)
-/// ============================
-static Future<bool> resetPassword({
-  required String email,
-  required String otp,
-  required String password,
-}) async {
-  try {
-    final response = await ApiClient.post(
-      ApiConstants.resetPassword,
-      {
-        "email": email.trim(),
-        "otp": otp.trim(),
-        "password": password,
-      },
-    );
+  /// ============================
+  /// RESET PASSWORD (OTP + NEW PASSWORD)
+  /// ============================
+  static Future<bool> resetPassword({
+    required String email,
+    required String otp,
+    required String password,
+  }) async {
+    try {
+      final response = await ApiClient.post(
+        ApiConstants.resetPassword,
+        {
+          "email": email.trim(),
+          "otp": otp.trim(),
+          "password": password,
+        },
+      );
 
-    return response.statusCode == 200 || response.statusCode == 201;
-  } catch (_) {
-    return false;
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (_) {
+      return false;
+    }
   }
-}
-
 }
