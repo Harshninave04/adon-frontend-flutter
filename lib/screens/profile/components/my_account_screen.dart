@@ -1,6 +1,6 @@
 import 'package:adon/features/profile/profile_service.dart';
 import 'package:flutter/material.dart';
-import '../../../constants.dart'; // Ensure this points to your color constants
+import '../../../constants.dart';
 
 class MyAccountScreen extends StatefulWidget {
   static String routeName = "/my_account";
