@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:adon/constants.dart';
-import 'package:adon/screens/favorite/favorite_screen.dart';
+import 'package:adon/screens/create-event/create-event_screen.dart';
 import 'package:adon/screens/home/home_screen.dart';
 import 'package:adon/screens/profile/profile_screen.dart';
 
@@ -27,7 +27,7 @@ class _InitScreenState extends State<InitScreen> {
 
   final pages = [
     const HomeScreen(),
-    const FavoriteScreen(),
+    const AddEventScreen(),
     const Center(
       child: Text("Chat"),
     ),
@@ -50,83 +50,77 @@ class _InitScreenState extends State<InitScreen> {
       },
       child: Scaffold(
         body: pages[currentSelectedIndex],
-        bottomNavigationBar: BottomNavigationBar(
-        onTap: updateCurrentIndex,
-        currentIndex: currentSelectedIndex,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              "assets/icons/Shop Icon.svg",
-              colorFilter: const ColorFilter.mode(
-                inActiveIconColor,
-                BlendMode.srcIn,
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
               ),
-            ),
-            activeIcon: SvgPicture.asset(
-              "assets/icons/Shop Icon.svg",
-              colorFilter: const ColorFilter.mode(
-                kPrimaryColor,
-                BlendMode.srcIn,
-              ),
-            ),
-            label: "Home",
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              "assets/icons/Heart Icon.svg",
-              colorFilter: const ColorFilter.mode(
-                inActiveIconColor,
-                BlendMode.srcIn,
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(
+                    index: 0,
+                    iconPath: "assets/icons/Shop Icon.svg",
+                  ),
+                  _buildNavItem(
+                    index: 1,
+                    iconPath: "assets/icons/Plus Icon.svg",
+                  ),
+                  _buildNavItem(
+                    index: 2,
+                    iconPath: "assets/icons/Chat bubble Icon.svg",
+                  ),
+                  _buildNavItem(
+                    index: 3,
+                    iconPath: "assets/icons/User Icon.svg",
+                  ),
+                ],
               ),
             ),
-            activeIcon: SvgPicture.asset(
-              "assets/icons/Heart Icon.svg",
-              colorFilter: const ColorFilter.mode(
-                kPrimaryColor,
-                BlendMode.srcIn,
-              ),
-            ),
-            label: "Fav",
           ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              "assets/icons/Chat bubble Icon.svg",
-              colorFilter: const ColorFilter.mode(
-                inActiveIconColor,
-                BlendMode.srcIn,
-              ),
-            ),
-            activeIcon: SvgPicture.asset(
-              "assets/icons/Chat bubble Icon.svg",
-              colorFilter: const ColorFilter.mode(
-                kPrimaryColor,
-                BlendMode.srcIn,
-              ),
-            ),
-            label: "Chat",
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              "assets/icons/User Icon.svg",
-              colorFilter: const ColorFilter.mode(
-                inActiveIconColor,
-                BlendMode.srcIn,
-              ),
-            ),
-            activeIcon: SvgPicture.asset(
-              "assets/icons/User Icon.svg",
-              colorFilter: const ColorFilter.mode(
-                kPrimaryColor,
-                BlendMode.srcIn,
-              ),
-            ),
-            label: "Fav",
-          ),
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required int index,
+    required String iconPath,
+  }) {
+    final isSelected = currentSelectedIndex == index;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => updateCurrentIndex(index),
+        borderRadius: BorderRadius.circular(12),
+        splashColor: kPrimaryColor.withOpacity(0.2),
+        highlightColor: kPrimaryColor.withOpacity(0.1),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? kPrimaryLightColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: SvgPicture.asset(
+            iconPath,
+            height: 24,
+            width: 24,
+            colorFilter: ColorFilter.mode(
+              isSelected ? kPrimaryColor : inActiveIconColor,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
       ),
     );
   }
