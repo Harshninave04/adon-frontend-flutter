@@ -25,4 +25,5 @@ class ApiConstants {
 
   static const String createEvent = '/api/events';
   static const String createEventFee = '/api/payments/event-fee';
+  static const String profile = '/api/profile';
 }

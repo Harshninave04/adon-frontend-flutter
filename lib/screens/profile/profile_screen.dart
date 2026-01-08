@@ -1,3 +1,5 @@
+import 'package:adon/screens/home/components/logout_icon_button.dart';
+import 'package:adon/screens/profile/components/my_account_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'components/profile_menu.dart';
@@ -22,7 +24,8 @@ class ProfileScreen extends StatelessWidget {
             ProfileMenu(
               text: "My Account",
               icon: "assets/icons/User Icon.svg",
-              press: () => {},
+              press: () =>
+                  {Navigator.pushNamed(context, MyAccountScreen.routeName)},
             ),
             ProfileMenu(
               text: "Notifications",
@@ -42,7 +45,9 @@ class ProfileScreen extends StatelessWidget {
             ProfileMenu(
               text: "Log Out",
               icon: "assets/icons/Log out.svg",
-              press: () {},
+              press: () async {
+                LogoutIconButton.showLogout(context);
+              },
             ),
           ],
         ),

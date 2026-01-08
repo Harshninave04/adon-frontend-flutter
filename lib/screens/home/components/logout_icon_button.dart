@@ -6,7 +6,7 @@ import 'icon_btn_with_counter.dart';
 class LogoutIconButton extends StatelessWidget {
   const LogoutIconButton({Key? key}) : super(key: key);
 
-  Future<void> _logout(BuildContext context) async {
+  static Future<void> _logout(BuildContext context) async {
     await AuthService.logout();
 
     Navigator.pushNamedAndRemoveUntil(
@@ -16,7 +16,7 @@ class LogoutIconButton extends StatelessWidget {
     );
   }
 
-  void _showLogoutBottomSheet(BuildContext context) {
+  static void showLogout(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -98,7 +98,7 @@ class LogoutIconButton extends StatelessWidget {
     return IconBtnWithCounter(
       svgSrc:
           "assets/icons/Log out.svg",
-      press: () => _showLogoutBottomSheet(context),
+      press: () => LogoutIconButton.showLogout(context),
     );
   }
 }
